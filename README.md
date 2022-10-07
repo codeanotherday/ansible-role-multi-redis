@@ -8,10 +8,47 @@ Install and configure multiple Redis instances on same server.
 Requirements
 ------------
 
-This role was developed and tested on Ubuntu 22.04 only.
+This role was developed and tested on Ubuntu 22.04 only. It should work on other on other ubuntu releases as well.
 
 Role Variables
 --------------
+
+All supported(& overridable) variables can be looked up in `defaults/main.yml` redisdefaults dict.
+
+Basic variables supported:
+```
+redis_name: examplename
+redis_port: 6379
+redis_bind_interface: 127.0.0.1
+redis_confdir: '/etc/redis/'
+```
+
+Set up replicas with auth.
+```
+redis_replicaof: '127.0.0.1 8300'
+# below fields are optional and required only when master is password protected with "requirepass"
+redis_masterauth: secretpassword
+redis_masteruser: legituser
+```
+
+Custom mount points for Redis db directory.
+redis_name is appended compulsorily to directory path to allow multiple Redis to reside on the same box.
+```
+redis_dbdir: /var/lib/redis.d/
+#translated to /var/lib/redis.d/examplename
+```
+
+Install custom Redis package version.
+```
+redis_package_version: '5:6.0.16-1ubuntu1'
+```
+
+Add additional configs not yet supported natively by role.
+```
+redis_additional_config:
+    - "hz 10"
+    - "lazyfree-lazy-user-del no"
+```
 
 Note: Information below doesn't concern regular user who just wants to configure redises. For developers, this is important.
 
@@ -33,8 +70,6 @@ None.
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
     ---
     - hosts: localhost
       vars:
@@ -52,12 +87,7 @@ Including an example of how to use your role (for instance, with variables passe
             instance: '{{ redisdefaults|combine(item) }}'
 
 Instead of making it part of playbook, variables can also be picked up from host_vars to make it as generic as possible.
-
-Supported variables currently
--------
-All supported(& overridable) variables can be looked up in defaults/main.yml
-
-redisdefaults dictionary
+Check examples directory.
 
 License
 -------

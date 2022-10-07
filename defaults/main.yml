@@ -12,6 +12,9 @@ redisdefaults:
   redis_loglevel: "notice"
   redis_logdir: /var/log/redis/
   redis_maxclients: 10000
+  redis_replicaof: ''
+  redis_masterauth: ''
+  redis_masteruser: ''
   redis_save:
     - 900 1
     - 300 10
@@ -36,11 +39,8 @@ redisdefaults:
   redis_activerehashing: "yes"
   redis_includes: []
   redis_requirepass: ""
+  redis_additional_config: []
   redis_disabled_commands: []
-  #  - KEYS
-  #  - FLUSHALL
-  #  - FLUSHDB
-
 
 
 # To be used by playbooks as default variable.
@@ -56,6 +56,9 @@ instance:
   redis_loglevel: "notice"
   redis_logdir: /var/log/redis/
   redis_maxclients: 10000
+  redis_replicaof: ''
+  redis_masterauth: ''
+  redis_masteruser: ''
   redis_save:
     - 900 1
     - 300 10
@@ -80,8 +83,5 @@ instance:
   redis_activerehashing: "yes"
   redis_includes: []
   redis_requirepass: ""
+  redis_additional_config: []
   redis_disabled_commands: []
-  #  - KEYS
-  #  - FLUSHALL
-  #  - FLUSHDB
-  
