@@ -1,0 +1,11 @@
+# redis_servers variable is populated from ../inventory/host_vars/localhost
+---
+- hosts: localhost
+  remote_user: root
+  tasks:
+    - name: Install redis
+      include_role:
+        name: ../../../
+      loop: '{{ redis_servers }}'
+      vars:
+        instance: '{{ redisdefaults|combine(item) }}'

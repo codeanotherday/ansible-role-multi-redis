@@ -1,0 +1,6 @@
+---
+# handlers file for multi-redis-ansible
+- name: restart redis
+  service:
+    name: "redis-server-{{ instance.redis_name }}"
+    state: restarted

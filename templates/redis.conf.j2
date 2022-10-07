@@ -1,0 +1,78 @@
+# {{ ansible_managed }}
+
+pidfile /run/{{ instance['redis_name'] }}.pid
+bind {{ instance['redis_bind_interface'] }}
+port {{ instance['redis_port'] }}
+
+
+{% if instance['redis_unixsocket'] %}
+unixsocket {{ instance['redis_unixsocket'] }}
+unixsocketperm {{ instance['redis_unixsocket_perm'] }}
+{% endif %}
+
+databases {{ instance['redis_databases'] }}
+dbfilename {{ instance['redis_dbfilename'] }}
+dir {{ instance['redis_dbdir'] ~ instance.redis_name }}
+rdbcompression {{ instance['redis_rdbcompression'] }}
+
+{% if instance['redis_save'] %}
+{% for save in instance['redis_save'] %}
+save {{ save }}
+{% endfor %}
+{% endif %}
+
+
+
+appendonly {{ instance['redis_appendonly'] }}
+appendfsync {{ instance['redis_appendfsync'] }}
+auto-aof-rewrite-min-size {{ instance['redis_aof_rewrite_minsize'] }}
+auto-aof-rewrite-percentage {{ instance['redis_aof_rewrite_percentage'] }}
+no-appendfsync-on-rewrite {{ instance['redis_appendfsync_on_rewrite'] }}
+
+
+
+loglevel {{ instance['redis_loglevel'] }}
+logfile {{ instance['redis_logdir'] ~ instance['redis_name'] }}.log
+
+slowlog-max-len {{ instance['redis_slow_log_maxlen'] }}
+slowlog-log-slower-than {{ instance['redis_slowlog_log_slowerthan'] }}
+
+
+timeout {{ instance['redis_timeout'] }}
+maxclients {{ instance['redis_maxclients'] }}
+
+
+
+{% if instance['redis_maxmemory'] %}
+maxmemory {{ instance['redis_maxmemory'] }}
+{% endif %}
+{% if instance['redis_maxmemory_policy'] %}
+maxmemory-policy {{ instance['redis_maxmemory_policy'] }}
+{% endif %}
+{% if instance['redis_maxmemory_samples'] %}
+maxmemory-samples {{ instance['redis_maxmemory_samples'] }}
+{% endif %}
+
+
+
+client-output-buffer-limit normal {{ instance['redis_client_output_buffer_limit_normal'] }}
+client-output-buffer-limit replica {{ instance['redis_client_output_buffer_limit_replica'] }}
+client-output-buffer-limit pubsub {{ instance['redis_client_output_buffer_limit_pubsub'] }}
+
+
+activerehashing {{ instance['redis_activerehashing'] }}
+
+
+{% for include in instance['redis_includes'] %}
+include {{ include }}
+{% endfor %}
+
+{% if instance['redis_requirepass'] %}
+requirepass {{ instance['redis_requirepass'] }}
+{% endif %}
+
+{% if instance['redis_disabled_commands'] %}
+{% for redis_disabled_command in redis_disabled_commands %}
+rename-command {{ redis_disabled_command }} ""
+{% endfor %}
+{% endif %}

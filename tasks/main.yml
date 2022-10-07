@@ -1,0 +1,55 @@
+---
+# tasks file for redis-ansible
+
+- name: Install Redis
+  apt:
+    name: "{{ instance.redis_package_version | ternary('redis-server=' + instance.redis_package_version, 'redis-server') }}"
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure Redis config directory exists.
+  file:
+    path: "{{ instance.redis_confdir | dirname }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0755
+
+- name: Ensure Redis Database directory exists.
+  file:
+    path: "{{ instance.redis_dbdir + instance.redis_name }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0740
+
+- name: Ensure Redis log directory exists.
+  file:
+    path: "{{ instance.redis_logdir }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0740
+
+- name: Ensure redis systemd service file is present.
+  template:
+    src: systemd-redis.service.j2
+    dest: "{{ '/etc/systemd/system/redis-server-' + instance.redis_name + '.service' }}"
+    mode: 0644
+  notify: restart redis
+
+- name: Ensure redis configuration is present.
+  template:
+    src: redis.conf.j2
+    dest: "{{ instance.redis_confdir + instance.redis_name + '.conf' }}"
+    mode: 0640
+    owner: redis
+    group: redis
+  notify: restart redis
+  
+- name: Ensure Redis runs
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: redis-server-{{ instance.redis_name }}
+    state: started

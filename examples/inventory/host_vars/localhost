@@ -1,0 +1,9 @@
+# You can override any property here and rest will be picked from default.
+# Please set appropriate redis_package_version for your instance.
+redis_servers:
+    -   redis_name: example1
+        redis_port: 7979
+        redis_package_version: 5:6.0.16-1ubuntu1
+    -   redis_name: example2
+        redis_port: 7980
+        redis_package_version: 5:6.0.16-1ubuntu1
