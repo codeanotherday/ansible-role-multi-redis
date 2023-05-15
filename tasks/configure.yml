@@ -1,0 +1,56 @@
+---
+# Tasks to configure Redis
+
+- name: Ensure Redis config directory exists.
+  file:
+    path: "{{ item.redis_confdir | default(redis_confdir) | dirname }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0755
+
+- name: Ensure Redis Database directory exists.
+  file:
+    path: "{{ item.redis_dbdir | default(redis_dbdir) }}{{ item.redis_name | default(redis_name) }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0740
+
+- name: Ensure Redis log directory exists.
+  file:
+    path: "{{ item.redis_logdir | default(redis_logdir) }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode:  0740
+
+- name: Ensure redis systemd service file is present.
+  template:
+    src: systemd-redis.service.j2
+    dest: "/etc/systemd/system/redis-server-{{ item.redis_name | default(redis_name) }}.service"
+    mode: 0644
+  register: server_service_file
+
+- name: Ensure redis configuration is present.
+  template:
+    src: redis.conf.j2
+    dest: "{{ item.redis_confdir | default(redis_confdir) }}{{ item.redis_name | default(redis_name )}}.conf"
+    mode: 0640
+    owner: redis
+    group: redis
+  register: server_config_file
+  
+- name: Ensure Redis runs
+  service:
+    daemon_reload: yes
+    enabled: yes
+    name: "redis-server-{{ item.redis_name | default(redis_name) }}"
+    state: started
+
+- name: Restart Redis if changed
+  service:
+    enabled: yes
+    name: "redis-server-{{ item.redis_name | default(redis_name) }}"
+    state: restarted
+  when: server_config_file.changed or server_service_file.changed

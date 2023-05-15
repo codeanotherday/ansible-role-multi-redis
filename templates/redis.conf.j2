@@ -13,19 +13,19 @@
 {% set password = item['redis_requirepass'] if 'redis_requirepass' in item  else redis_requirepass %}
 {% set additional_config = item['redis_additional_config'] if 'redis_additional_config' in item else redis_additional_config %}
 
-pidfile /run/"{{ item['redis_name'] | default(redis_name) }}".pid
-bind "{{ item['redis_bind_interface'] | default(redis_bind_interface) }}"
-port "{{ item['redis_port'] | default(redis_port) }}"
+pidfile /run/{{ item['redis_name'] | default(redis_name) }}.pid
+bind {{ item['redis_bind_interface'] | default(redis_bind_interface) }}
+port {{ item['redis_port'] | default(redis_port) }}
 
 {% if unixsocket %}
-unixsocket "{{ unixsocket }}"
-unixsocketperm "{{ item['redis_unixsocket_perm'] | default(redis_unixsocket_perm) }}"
+unixsocket {{ unixsocket }}
+unixsocketperm {{ item['redis_unixsocket_perm'] | default(redis_unixsocket_perm) }}
 {% endif %}
 
-databases "{{ item['redis_databases'] | default(redis_databases) }}"
-dbfilename "{{ item['redis_dbfilename'] | default(redis_dbfilename) }}"
+databases {{ item['redis_databases'] | default(redis_databases) }}
+dbfilename {{ item['redis_dbfilename'] | default(redis_dbfilename) }}
 dir {{ item['redis_dbdir'] | default(redis_dbdir) }}{{ item['redis_name'] | default(redis_name) }}
-rdbcompression "{{ item['redis_rdbcompression'] | default(redis_rdbcompression) }}"
+rdbcompression {{ item['redis_rdbcompression'] | default(redis_rdbcompression) }}
 
 {% if save_option %}
 {% for save in save_option %}
@@ -34,45 +34,45 @@ save {{ save }}
 {% endif %}
 
 {% if replicaof %}
-replicaof "{{ replicaof }}"
+replicaof {{ replicaof }}
 {% endif %}
 
 {% if masterauth %}
-masterauth "{{ masterauth }}"
+masterauth {{ masterauth }}
 {% endif %}
 
 {% if masteruser %}
-masteruser "{{ masteruser }}"
+masteruser {{ masteruser }}
 {% endif %}
 
-appendonly "{{ item['redis_appendonly'] | default(redis_appendonly) }}"
-appendfsync "{{ item['redis_appendfsync'] | default(redis_appendfsync) }}"
-auto-aof-rewrite-min-size "{{ item['redis_aof_rewrite_minsize'] | default(redis_aof_rewrite_minsize) }}"
-auto-aof-rewrite-percentage "{{ item['redis_aof_rewrite_percentage'] | default(redis_aof_rewrite_percentage) }}"
-no-appendfsync-on-rewrite "{{ item['redis_appendfsync_on_rewrite'] | default(redis_appendfsync_on_rewrite) }}"
-loglevel "{{ item['redis_loglevel'] | default(redis_loglevel) }}"
-logfile "{{ item['redis_logdir'] | default(redis_logdir) }}{{ item['redis_name'] | default(redis_name) }}".log
-slowlog-max-len "{{ item['redis_slow_log_maxlen'] | default(redis_slow_log_maxlen) }}"
-slowlog-log-slower-than "{{ item['redis_slowlog_log_slowerthan'] | default(redis_slowlog_log_slowerthan) }}"
-timeout "{{ item['redis_timeout'] | default(redis_timeout) }}"
-maxclients "{{ item['redis_maxclients'] | default(redis_maxclients) }}"
+appendonly {{ item['redis_appendonly'] | default(redis_appendonly) }}
+appendfsync {{ item['redis_appendfsync'] | default(redis_appendfsync) }}
+auto-aof-rewrite-min-size {{ item['redis_aof_rewrite_minsize'] | default(redis_aof_rewrite_minsize) }}
+auto-aof-rewrite-percentage {{ item['redis_aof_rewrite_percentage'] | default(redis_aof_rewrite_percentage) }}
+no-appendfsync-on-rewrite {{ item['redis_appendfsync_on_rewrite'] | default(redis_appendfsync_on_rewrite) }}
+loglevel {{ item['redis_loglevel'] | default(redis_loglevel) }}
+logfile {{ item['redis_logdir'] | default(redis_logdir) }}{{ item['redis_name'] | default(redis_name) }}.log
+slowlog-max-len {{ item['redis_slow_log_maxlen'] | default(redis_slow_log_maxlen) }}
+slowlog-log-slower-than {{ item['redis_slowlog_log_slowerthan'] | default(redis_slowlog_log_slowerthan) }}
+timeout {{ item['redis_timeout'] | default(redis_timeout) }}
+maxclients {{ item['redis_maxclients'] | default(redis_maxclients) }}
 
 {% if maxmem %}
-maxmemory "{{ item['redis_maxmemory'] | default(redis_maxmemory) }}"
+maxmemory {{ item['redis_maxmemory'] | default(redis_maxmemory) }}
 {% endif %}
 
 {% if maxmempolicy %}
-maxmemory-policy "{{ maxmempolicy }}"
+maxmemory-policy {{ maxmempolicy }}
 {% endif %}
 
 {% if maxmemsamples %}
-maxmemory-samples "{{ maxmemsamples }}"
+maxmemory-samples {{ maxmemsamples }}
 {% endif %}
 
-client-output-buffer-limit normal "{{ item['redis_client_output_buffer_limit_normal'] | default(redis_client_output_buffer_limit_normal) }}"
-client-output-buffer-limit replica "{{ item['redis_client_output_buffer_limit_replica'] | default(redis_client_output_buffer_limit_replica) }}"
-client-output-buffer-limit pubsub "{{ item['redis_client_output_buffer_limit_pubsub'] | default(redis_client_output_buffer_limit_pubsub) }}"
-activerehashing "{{ item['redis_activerehashing'] | default(redis_activerehashing) }}"
+client-output-buffer-limit normal {{ item['redis_client_output_buffer_limit_normal'] | default(redis_client_output_buffer_limit_normal) }}
+client-output-buffer-limit replica {{ item['redis_client_output_buffer_limit_replica'] | default(redis_client_output_buffer_limit_replica) }}
+client-output-buffer-limit pubsub {{ item['redis_client_output_buffer_limit_pubsub'] | default(redis_client_output_buffer_limit_pubsub) }}
+activerehashing {{ item['redis_activerehashing'] | default(redis_activerehashing) }}
 
 {% for include in redis_inclusion %}
 include {{ include }}
@@ -80,7 +80,7 @@ include {{ include }}
 
 
 {% if password %}
-requirepass "{{ password }}"
+requirepass {{ password }}
 {% endif %}
 
 

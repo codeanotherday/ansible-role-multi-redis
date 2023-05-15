@@ -8,55 +8,6 @@
     cache_valid_time: 3600
   loop: "{{ redis_servers }}"
 
-- name: Ensure Redis config directory exists.
-  file:
-    path: "{{ item.redis_confdir | default(redis_confdir) | dirname }}"
-    state: directory
-    owner: redis
-    group: redis
-    mode:  0755
-  loop: "{{ redis_servers }}"
-
-- name: Ensure Redis Database directory exists.
-  file:
-    path: "{{ item.redis_dbdir | default(redis_dbdir) }}{{ item.redis_name | default(redis_name) }}"
-    state: directory
-    owner: redis
-    group: redis
-    mode:  0740
-  loop: "{{ redis_servers }}"
-
-- name: Ensure Redis log directory exists.
-  file:
-    path: "{{ item.redis_logdir | default(redis_logdir) }}"
-    state: directory
-    owner: redis
-    group: redis
-    mode:  0740
-  loop: "{{ redis_servers }}"
-
-- name: Ensure redis systemd service file is present.
-  template:
-    src: systemd-redis.service.j2
-    dest: "/etc/systemd/system/redis-server-{{ item.redis_name | default(redis_name) }}.service"
-    mode: 0644
-  notify: restart redis
-  loop: "{{ redis_servers }}"
-
-- name: Ensure redis configuration is present.
-  template:
-    src: redis.conf.j2
-    dest: "{{ item.redis_confdir | default(redis_confdir) }}{{ item.redis_name | default(redis_name )}}.conf"
-    mode: 0640
-    owner: redis
-    group: redis
-  notify: restart redis
-  loop: "{{ redis_servers }}"
-  
-- name: Ensure Redis runs
-  systemd:
-    daemon_reload: yes
-    enabled: yes
-    name: redis-server-{{ item.redis_name | default(redis_name) }}
-    state: started
+- name: Configure Redis servers
+  include_tasks: configure.yml
   loop: "{{ redis_servers }}"
