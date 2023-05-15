@@ -1,78 +1,92 @@
 # {{ ansible_managed }}
 
-pidfile /run/{{ instance['redis_name'] }}.pid
-bind {{ instance['redis_bind_interface'] }}
-port {{ instance['redis_port'] }}
+{% set disabled_command = item['redis_disabled_commands'] if 'redis_disabled_commands' in item  else redis_disabled_commands %}
+{% set unixsocket = item['redis_unixsocket'] if 'redis_unixsocket' in item else redis_unixsocket  %}
+{% set save_option = item['redis_save'] if 'redis_save' in item else redis_save  %}
+{% set replicaof = item['redis_replicaof'] if 'redis_replicaof' in item else redis_replicaof  %}
+{% set masterauth = item['redis_masterauth'] if 'redis_masterauth' in item else redis_masterauth  %}
+{% set masteruser = item['redis_masteruser'] if 'redis_masteruser' in item else redis_masteruser  %}
+{% set maxmem = item['redis_maxmemory'] if 'redis_maxmemory' in item else redis_maxmemory  %}
+{% set maxmempolicy = item['redis_maxmemory_policy'] if 'redis_maxmemory_policy' in item else redis_maxmemory_policy  %}
+{% set maxmemsamples = item['redis_maxmemory_samples'] if 'redis_maxmemory_samples' in item else redis_maxmemory_samples  %}
+{% set redis_inclusion = item['redis_includes'] if 'redis_includes' in item  else redis_includes %}
+{% set password = item['redis_requirepass'] if 'redis_requirepass' in item  else redis_requirepass %}
+{% set additional_config = item['redis_additional_config'] if 'redis_additional_config' in item else redis_additional_config %}
 
-{% if instance['redis_unixsocket'] %}
-unixsocket {{ instance['redis_unixsocket'] }}
-unixsocketperm {{ instance['redis_unixsocket_perm'] }}
+pidfile /run/"{{ item['redis_name'] | default(redis_name) }}".pid
+bind "{{ item['redis_bind_interface'] | default(redis_bind_interface) }}"
+port "{{ item['redis_port'] | default(redis_port) }}"
+
+{% if unixsocket %}
+unixsocket "{{ unixsocket }}"
+unixsocketperm "{{ item['redis_unixsocket_perm'] | default(redis_unixsocket_perm) }}"
 {% endif %}
 
-databases {{ instance['redis_databases'] }}
-dbfilename {{ instance['redis_dbfilename'] }}
-dir {{ instance['redis_dbdir'] ~ instance.redis_name }}
-rdbcompression {{ instance['redis_rdbcompression'] }}
+databases "{{ item['redis_databases'] | default(redis_databases) }}"
+dbfilename "{{ item['redis_dbfilename'] | default(redis_dbfilename) }}"
+dir {{ item['redis_dbdir'] | default(redis_dbdir) }}{{ item['redis_name'] | default(redis_name) }}
+rdbcompression "{{ item['redis_rdbcompression'] | default(redis_rdbcompression) }}"
 
-{% if instance['redis_save'] %}
-{% for save in instance['redis_save'] %}
+{% if save_option %}
+{% for save in save_option %}
 save {{ save }}
 {% endfor %}
 {% endif %}
 
-{% if instance['redis_replicaof'] %}
-replicaof {{ instance['redis_replicaof'] }}
+{% if replicaof %}
+replicaof "{{ replicaof }}"
 {% endif %}
 
-{% if instance['redis_masterauth'] %}
-masterauth {{ instance['redis_masterauth'] }}
+{% if masterauth %}
+masterauth "{{ masterauth }}"
 {% endif %}
 
-{% if instance['redis_masteruser'] %}
-masteruser {{ instance['redis_masteruser'] }}
+{% if masteruser %}
+masteruser "{{ masteruser }}"
 {% endif %}
 
-appendonly {{ instance['redis_appendonly'] }}
-appendfsync {{ instance['redis_appendfsync'] }}
-auto-aof-rewrite-min-size {{ instance['redis_aof_rewrite_minsize'] }}
-auto-aof-rewrite-percentage {{ instance['redis_aof_rewrite_percentage'] }}
-no-appendfsync-on-rewrite {{ instance['redis_appendfsync_on_rewrite'] }}
-loglevel {{ instance['redis_loglevel'] }}
-logfile {{ instance['redis_logdir'] ~ instance['redis_name'] }}.log
-slowlog-max-len {{ instance['redis_slow_log_maxlen'] }}
-slowlog-log-slower-than {{ instance['redis_slowlog_log_slowerthan'] }}
-timeout {{ instance['redis_timeout'] }}
-maxclients {{ instance['redis_maxclients'] }}
+appendonly "{{ item['redis_appendonly'] | default(redis_appendonly) }}"
+appendfsync "{{ item['redis_appendfsync'] | default(redis_appendfsync) }}"
+auto-aof-rewrite-min-size "{{ item['redis_aof_rewrite_minsize'] | default(redis_aof_rewrite_minsize) }}"
+auto-aof-rewrite-percentage "{{ item['redis_aof_rewrite_percentage'] | default(redis_aof_rewrite_percentage) }}"
+no-appendfsync-on-rewrite "{{ item['redis_appendfsync_on_rewrite'] | default(redis_appendfsync_on_rewrite) }}"
+loglevel "{{ item['redis_loglevel'] | default(redis_loglevel) }}"
+logfile "{{ item['redis_logdir'] | default(redis_logdir) }}{{ item['redis_name'] | default(redis_name) }}".log
+slowlog-max-len "{{ item['redis_slow_log_maxlen'] | default(redis_slow_log_maxlen) }}"
+slowlog-log-slower-than "{{ item['redis_slowlog_log_slowerthan'] | default(redis_slowlog_log_slowerthan) }}"
+timeout "{{ item['redis_timeout'] | default(redis_timeout) }}"
+maxclients "{{ item['redis_maxclients'] | default(redis_maxclients) }}"
 
-{% if instance['redis_maxmemory'] %}
-maxmemory {{ instance['redis_maxmemory'] }}
-{% endif %}
-{% if instance['redis_maxmemory_policy'] %}
-maxmemory-policy {{ instance['redis_maxmemory_policy'] }}
-{% endif %}
-{% if instance['redis_maxmemory_samples'] %}
-maxmemory-samples {{ instance['redis_maxmemory_samples'] }}
+{% if maxmem %}
+maxmemory "{{ item['redis_maxmemory'] | default(redis_maxmemory) }}"
 {% endif %}
 
-client-output-buffer-limit normal {{ instance['redis_client_output_buffer_limit_normal'] }}
-client-output-buffer-limit replica {{ instance['redis_client_output_buffer_limit_replica'] }}
-client-output-buffer-limit pubsub {{ instance['redis_client_output_buffer_limit_pubsub'] }}
-activerehashing {{ instance['redis_activerehashing'] }}
+{% if maxmempolicy %}
+maxmemory-policy "{{ maxmempolicy }}"
+{% endif %}
 
-{% for include in instance['redis_includes'] %}
+{% if maxmemsamples %}
+maxmemory-samples "{{ maxmemsamples }}"
+{% endif %}
+
+client-output-buffer-limit normal "{{ item['redis_client_output_buffer_limit_normal'] | default(redis_client_output_buffer_limit_normal) }}"
+client-output-buffer-limit replica "{{ item['redis_client_output_buffer_limit_replica'] | default(redis_client_output_buffer_limit_replica) }}"
+client-output-buffer-limit pubsub "{{ item['redis_client_output_buffer_limit_pubsub'] | default(redis_client_output_buffer_limit_pubsub) }}"
+activerehashing "{{ item['redis_activerehashing'] | default(redis_activerehashing) }}"
+
+{% for include in redis_inclusion %}
 include {{ include }}
 {% endfor %}
 
-{% if instance['redis_requirepass'] %}
-requirepass {{ instance['redis_requirepass'] }}
+
+{% if password %}
+requirepass "{{ password }}"
 {% endif %}
 
-{% if instance['redis_disabled_commands'] %}
+
+{% if disabled_command %}
 {% for redis_disabled_command in redis_disabled_commands %}
-rename-command {{ redis_disabled_command }} ""
+rename-command {{ disabled_command }} ""
 {% endfor %}
 {% endif %}
 
-{% for config in instance['redis_additional_config'] %}
-{{ config }}
-{% endfor %}

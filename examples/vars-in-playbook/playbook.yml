@@ -1,18 +1,15 @@
 # redis_servers is populated directly from within the playbook
 ---
 - hosts: localhost
-  gather_facts: no
+  become: true
+  connection: local
   vars:
     redis_servers:
       - redis_name: example1
         redis_port: 7979
       - redis_name: example2
         redis_port: 7980
-  remote_user: root
   tasks:
     - name: Install redis
       include_role:
         name: ../../../
-      loop: '{{ redis_servers }}'
-      vars:
-        instance: '{{ redisdefaults|combine(item) }}'

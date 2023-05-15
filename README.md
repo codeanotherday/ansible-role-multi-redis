@@ -3,7 +3,7 @@ ansible-role-multi-redis
 
 [![CI](https://github.com/codeanotherday/ansible-role-multi-redis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/codeanotherday/ansible-role-multi-redis/actions/workflows/ci.yml)
 
-Install and configure multiple Redis instances on same server.
+Install and configure multiple Redis servers on same servers.
 
 Requirements
 ------------
@@ -50,18 +50,6 @@ redis_additional_config:
     - "lazyfree-lazy-user-del no"
 ```
 
-Note: Information below doesn't concern regular user who just wants to configure redises. For developers, this is important.
-
-defaults/main.yaml contains 2 dicts:
-1. redisdefaults
-2. instance
-
-Both contain same attributes. This was required because I was unable to figure out how to merge dictionary(with same name) passed from playbook to role.
-
-`redisdefaults` is used to merge defaults with overridden values coming from hostvars or role and then assigned to `instance`.
-
-`instance` is then utilised in configuring everything else.
-
 Dependencies
 ------------
 
@@ -70,21 +58,21 @@ None.
 Example Playbook
 ----------------
 
-    ---
-    - hosts: localhost
-      vars:
-        redis_servers:
-          - redis_name: test-instance
-            redis_confdir: /etc/redis/
-            redis_port: 7379
-      remote_user: root
-      tasks:
-        - name: Install redis
-          include_role:
-            name: ./multi-redis-ansible
-          loop: '{{ redis_servers }}'
-          vars:
-            instance: '{{ redisdefaults|combine(item) }}'
+---
+- hosts: localhost
+  become: true
+  connection: local
+  vars:
+    redis_servers:
+      - redis_name: example1
+        redis_port: 7979
+      - redis_name: example2
+        redis_port: 7980
+  tasks:
+    - name: Install redis
+      include_role:
+        name: ../../../
+
 
 Instead of making it part of playbook, variables can also be picked up from host_vars to make it as generic as possible.
 Check examples directory.

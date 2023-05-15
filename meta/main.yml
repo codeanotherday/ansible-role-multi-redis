@@ -2,7 +2,7 @@ galaxy_info:
   author: Vishal Garg
   role_name: multi_redis
   namespace: codeanotherday
-  description: Ansible role to setup/manage multiple redis instances on same host.
+  description: Ansible role to setup/manage multiple redis servers on same host.
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
