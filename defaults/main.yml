@@ -40,3 +40,4 @@ redis_includes: []
 redis_requirepass: ""
 redis_additional_config: []
 redis_disabled_commands: []
+redis_modules: []
