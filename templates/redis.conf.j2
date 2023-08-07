@@ -12,6 +12,7 @@
 {% set redis_inclusion = item['redis_includes'] if 'redis_includes' in item  else redis_includes %}
 {% set password = item['redis_requirepass'] if 'redis_requirepass' in item  else redis_requirepass %}
 {% set additional_config = item['redis_additional_config'] if 'redis_additional_config' in item else redis_additional_config %}
+{% set redis_modules = item['redis_modules'] if 'redis_modules' in item else redis_modules %}
 
 pidfile /run/{{ item['redis_name'] | default(redis_name) }}.pid
 bind {{ item['redis_bind_interface'] | default(redis_bind_interface) }}
@@ -90,3 +91,8 @@ rename-command {{ disabled_command }} ""
 {% endfor %}
 {% endif %}
 
+{% if redis_modules %}
+{% for module in redis_modules %}
+loadmodule /opt/redis-modules/{{ module }}.so
+{% endfor %}
+{% endif %}
